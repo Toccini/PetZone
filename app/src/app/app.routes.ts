@@ -1,0 +1,13 @@
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'login' },
+
+  // Públicas
+  { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.Login) },
+  { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then(m => m.Register) },
+  { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
+  { path: 'reset-password', loadComponent: () => import('./features/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent) },
+
+  { path: '**', redirectTo: 'login' },
+];

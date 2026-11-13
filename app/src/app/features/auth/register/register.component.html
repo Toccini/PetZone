@@ -1,0 +1,26 @@
+<ion-content class="ion-padding">
+  <div class="container">
+    <h1>Criar conta</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <ion-input label="Nome completo" labelPlacement="floating" fill="outline" formControlName="name"></ion-input>
+      <ion-input label="E-mail" labelPlacement="floating" fill="outline" type="email" formControlName="email"></ion-input>
+      <ion-input label="Telefone" labelPlacement="floating" fill="outline" type="tel" formControlName="phone"></ion-input>
+      <ion-input label="CPF (opcional)" labelPlacement="floating" fill="outline" formControlName="cpf"></ion-input>
+      <ion-input label="Senha (mín. 6 caracteres)" labelPlacement="floating" fill="outline" type="password" formControlName="password"></ion-input>
+      <ion-input label="Confirmar senha" labelPlacement="floating" fill="outline" type="password" formControlName="confirmPassword"></ion-input>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <ion-button expand="block" type="submit" [disabled]="loading()">
+        @if (loading()) { <ion-spinner name="dots"></ion-spinner> } @else { Cadastrar }
+      </ion-button>
+    </form>
+
+    <div class="links">
+      <a routerLink="/login">Já tenho conta</a>
+    </div>
+  </div>
+</ion-content>
