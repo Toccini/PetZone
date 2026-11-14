@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { db } from '../db';
+import { pool } from '../db';
 
 const router = Router();
 
@@ -14,26 +14,26 @@ const publicUser = (u: any) => ({
 });
 
 // Cadastro de cliente (autocadastro)
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
   const { name, email, phone, cpf, password } = req.body;
   if (!name || !email || !phone || !password || password.length < 6) {
     return res.status(400).json({ message: 'Dados inválidos (senha com mínimo de 6 caracteres)' });
   }
-  const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-  if (exists) return res.status(409).json({ message: 'E-mail já cadastrado' });
+  const { rows: exists } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+  if (exists.length) return res.status(409).json({ message: 'E-mail já cadastrado' });
 
-  const result = db.prepare(
-    'INSERT INTO users (name, email, phone, cpf, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)'
-  ).run(name, email, phone, cpf ?? null, bcrypt.hashSync(password, 10), 'CLIENT');
-
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid);
+  const { rows: [user] } = await pool.query(
+    `INSERT INTO users (name, email, phone, cpf, password_hash, role)
+     VALUES ($1, $2, $3, $4, $5, 'CLIENT') RETURNING *`,
+    [name, email, phone, cpf ?? null, bcrypt.hashSync(password, 10)]
+  );
   res.status(201).json({ token: sign(user), user: publicUser(user) });
 });
 
 // Login
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
+  const { rows: [user] } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
   if (!user || !bcrypt.compareSync(password ?? '', user.password_hash)) {
     return res.status(401).json({ message: 'E-mail ou senha inválidos' });
   }
@@ -41,17 +41,19 @@ router.post('/login', (req, res) => {
 });
 
 // Esqueci a senha: gera token e "envia" o link
-router.post('/forgot-password', (req, res) => {
+router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
-  const user = db.prepare('SELECT id FROM users WHERE email = ?').get(email) as any;
+  const { rows: [user] } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
 
   if (user) {
     const token = crypto.randomBytes(32).toString('hex');
     const hash = crypto.createHash('sha256').update(token).digest('hex');
     const expires = Date.now() + 30 * 60 * 1000; // 30 min
 
-    db.prepare('UPDATE users SET reset_token_hash = ?, reset_expires_at = ? WHERE id = ?')
-      .run(hash, expires, user.id);
+    await pool.query(
+      'UPDATE users SET reset_token_hash = $1, reset_expires_at = $2 WHERE id = $3',
+      [hash, expires, user.id]
+    );
 
     // TODO: enviar por e-mail (nodemailer). Por enquanto, aparece no console da API:
     console.log(`[RESET] Link: http://localhost:8100/reset-password?token=${token}`);
@@ -62,21 +64,23 @@ router.post('/forgot-password', (req, res) => {
 });
 
 // Redefinir senha
-router.post('/reset-password', (req, res) => {
+router.post('/reset-password', async (req, res) => {
   const { token, newPassword } = req.body;
   if (!token || !newPassword || newPassword.length < 6) {
     return res.status(400).json({ message: 'Dados inválidos' });
   }
   const hash = crypto.createHash('sha256').update(token).digest('hex');
-  const user = db.prepare(
-    'SELECT id FROM users WHERE reset_token_hash = ? AND reset_expires_at > ?'
-  ).get(hash, Date.now()) as any;
+  const { rows: [user] } = await pool.query(
+    'SELECT id FROM users WHERE reset_token_hash = $1 AND reset_expires_at > $2',
+    [hash, Date.now()]
+  );
 
   if (!user) return res.status(400).json({ message: 'Token inválido ou expirado' });
 
-  db.prepare(
-    'UPDATE users SET password_hash = ?, reset_token_hash = NULL, reset_expires_at = NULL WHERE id = ?'
-  ).run(bcrypt.hashSync(newPassword, 10), user.id);
+  await pool.query(
+    'UPDATE users SET password_hash = $1, reset_token_hash = NULL, reset_expires_at = NULL WHERE id = $2',
+    [bcrypt.hashSync(newPassword, 10), user.id]
+  );
 
   res.json({ message: 'Senha redefinida com sucesso' });
 });
