@@ -1,1 +1,125 @@
-<p>client-form works!</p>
+<ion-content>
+  <main id="main" class="page page--wide">
+    <h1 class="heading title">Clientes</h1>
+
+    <div class="layout">
+      <!-- Cadastro no balcão -->
+      <section class="card form-card" aria-labelledby="new-client-title">
+        <h2 id="new-client-title" class="heading-sm">
+          <ion-icon name="person-add-outline" aria-hidden="true"></ion-icon>
+          Cadastrar cliente
+        </h2>
+        <p class="notice intro">Para quem chegou ao balcão sem conta no app.</p>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="field">
+            <label class="field__label" for="c-name">Nome completo</label>
+            <input id="c-name" class="input" type="text" formControlName="name" autocomplete="off"
+              placeholder="Maria Silva" [attr.aria-invalid]="show('name') ? 'true' : null" />
+            @if (show('name')) {
+            <p class="field__error">Informe o nome do cliente.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="c-email">E-mail</label>
+            <input id="c-email" class="input" type="email" formControlName="email" inputmode="email" autocomplete="off"
+              placeholder="cliente@email.com" [attr.aria-invalid]="show('email') ? 'true' : null" />
+            @if (show('email')) {
+            <p class="field__error">Informe um e-mail válido.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="c-phone">Telefone</label>
+            <input id="c-phone" class="input" type="tel" formControlName="phone" inputmode="tel" autocomplete="off"
+              placeholder="(14) 99999-9999" [attr.aria-invalid]="show('phone') ? 'true' : null" />
+            @if (show('phone')) {
+            <p class="field__error">Informe o telefone com DDD.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="c-cpf">CPF</label>
+            <input id="c-cpf" class="input" type="text" formControlName="cpf" inputmode="numeric"
+              placeholder="000.000.000-00" aria-describedby="c-cpf-hint" />
+            <p id="c-cpf-hint" class="field__hint">Opcional</p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="c-pass">Senha provisória</label>
+            <input id="c-pass" class="input" type="text" formControlName="password" autocomplete="off"
+              placeholder="Mínimo de 6 caracteres" aria-describedby="c-pass-hint"
+              [attr.aria-invalid]="show('password') ? 'true' : null" />
+            @if (show('password')) {
+            <p class="field__error">A senha precisa ter pelo menos 6 caracteres.</p>
+            }
+            <p id="c-pass-hint" class="field__hint">O cliente pode trocar depois em "Esqueci minha senha".</p>
+          </div>
+
+          @if (formError()) {
+          <p class="form-error" role="alert">{{ formError() }}</p>
+          }
+          <div aria-live="polite">
+            @if (message()) {
+            <p class="notice">{{ message() }}</p>
+            }
+          </div>
+
+          <button class="btn btn--dark" type="submit" [disabled]="saving()">
+            {{ saving() ? 'Cadastrando…' : 'Cadastrar cliente' }}
+          </button>
+        </form>
+      </section>
+
+      <!-- Lista com busca -->
+      <section class="list-col" aria-labelledby="list-title">
+        <div class="section__head">
+          <h2 id="list-title">Clientes cadastrados</h2>
+        </div>
+
+        <div class="input-icon search" role="search">
+          <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+          <label class="sr-only" for="c-search">Buscar cliente por nome, e-mail ou telefone</label>
+          <input id="c-search" class="input" type="search" placeholder="Buscar por nome, e-mail ou telefone"
+            [value]="query()" (input)="onQuery($any($event.target).value)" />
+        </div>
+
+        @if (listError()) {
+        <p class="form-error" role="alert">{{ listError() }}</p>
+        }
+
+        <p class="sr-only" aria-live="polite">
+          @if (!loading()) { {{ clients().length }} clientes encontrados }
+        </p>
+
+        @if (loading()) {
+        <p class="loading-text">Carregando clientes…</p>
+        } @else if (clients().length === 0) {
+        <p class="notice">
+          @if (query()) { Nenhum cliente encontrado para "{{ query() }}". } @else { Nenhum cliente cadastrado ainda. }
+        </p>
+        } @else {
+        <ul class="list-group clients" role="list">
+          @for (c of clients(); track c.id) {
+          <li class="client">
+            <span class="avatar" aria-hidden="true">{{ initial(c.name) }}</span>
+            <div class="client__body">
+              <p class="client__name">{{ c.name }}</p>
+              <p class="client__meta">
+                <span><ion-icon name="mail-outline" aria-hidden="true"></ion-icon>{{ c.email }}</span>
+                <a [href]="phoneHref(c.phone)"><ion-icon name="call-outline" aria-hidden="true"></ion-icon>{{ c.phone }}</a>
+              </p>
+            </div>
+            <span class="badge badge--COMPLETED">
+              <ion-icon name="paw-outline" aria-hidden="true"></ion-icon>
+              {{ c.pet_count }} {{ c.pet_count === 1 ? 'pet' : 'pets' }}
+            </span>
+          </li>
+          }
+        </ul>
+        }
+      </section>
+    </div>
+  </main>
+</ion-content>

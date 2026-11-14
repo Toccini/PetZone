@@ -1,26 +1,67 @@
-<ion-content class="ion-padding">
-  <div class="container">
-    <h1>Criar conta</h1>
-
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <ion-input label="Nome completo" labelPlacement="floating" fill="outline" formControlName="name"></ion-input>
-      <ion-input label="E-mail" labelPlacement="floating" fill="outline" type="email" formControlName="email"></ion-input>
-      <ion-input label="Telefone" labelPlacement="floating" fill="outline" type="tel" formControlName="phone"></ion-input>
-      <ion-input label="CPF (opcional)" labelPlacement="floating" fill="outline" formControlName="cpf"></ion-input>
-      <ion-input label="Senha (mín. 6 caracteres)" labelPlacement="floating" fill="outline" type="password" formControlName="password"></ion-input>
-      <ion-input label="Confirmar senha" labelPlacement="floating" fill="outline" type="password" formControlName="confirmPassword"></ion-input>
-
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
+<app-auth-shell title="Criar conta" subtitle="Cadastre-se para agendar serviços." back="/login">
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label class="field__label" for="name">Nome completo</label>
+      <input id="name" class="input" type="text" formControlName="name" autocomplete="name" placeholder="Maria Silva"
+        [attr.aria-invalid]="show('name') ? 'true' : null" />
+      @if (show('name')) {
+      <p class="field__error">Informe seu nome.</p>
       }
-
-      <ion-button expand="block" type="submit" [disabled]="loading()">
-        @if (loading()) { <ion-spinner name="dots"></ion-spinner> } @else { Cadastrar }
-      </ion-button>
-    </form>
-
-    <div class="links">
-      <a routerLink="/login">Já tenho conta</a>
     </div>
-  </div>
-</ion-content>
+
+    <div class="field">
+      <label class="field__label" for="email">E-mail</label>
+      <input id="email" class="input" type="email" formControlName="email" autocomplete="email" inputmode="email"
+        placeholder="voce@email.com" [attr.aria-invalid]="show('email') ? 'true' : null" />
+      @if (show('email')) {
+      <p class="field__error">Informe um e-mail válido.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="phone">Telefone</label>
+      <input id="phone" class="input" type="tel" formControlName="phone" autocomplete="tel" inputmode="tel"
+        placeholder="(14) 99999-9999" [attr.aria-invalid]="show('phone') ? 'true' : null" />
+      @if (show('phone')) {
+      <p class="field__error">Informe seu telefone.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="cpf">CPF (opcional)</label>
+      <input id="cpf" class="input" type="text" formControlName="cpf" inputmode="numeric"
+        placeholder="000.000.000-00" />
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="password">Senha</label>
+      <input id="password" class="input" type="password" formControlName="password" autocomplete="new-password"
+        placeholder="Mínimo de 6 caracteres" [attr.aria-invalid]="show('password') ? 'true' : null" />
+      @if (show('password')) {
+      <p class="field__error">A senha precisa ter pelo menos 6 caracteres.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="confirmPassword">Confirmar senha</label>
+      <input id="confirmPassword" class="input" type="password" formControlName="confirmPassword"
+        autocomplete="new-password" placeholder="Repita a senha"
+        [attr.aria-invalid]="confirmInvalid() ? 'true' : null" />
+      @if (show('confirmPassword')) {
+      <p class="field__error">Confirme a senha.</p>
+      } @else if (mismatch()) {
+      <p class="field__error">As senhas não coincidem.</p>
+      }
+    </div>
+
+    @if (error()) {
+    <p class="form-error" role="alert">{{ error() }}</p>
+    }
+
+    <button class="btn btn--dark" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Criando conta…' : 'Criar conta' }}
+    </button>
+
+    <a class="link center has-account" routerLink="/login">Já tenho conta</a>
+  </form>
+</app-auth-shell>

@@ -1,0 +1,194 @@
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 16px 0 24px;
+}
+
+.head__sub {
+  margin: 6px 0 0;
+  font: 400 16px/24px var(--font-ui);
+}
+
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-input {
+  width: auto;
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 16px;
+}
+
+/* Resumo do dia */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px;
+}
+
+.stat__n {
+  font: 500 32px/1 var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.stat__l {
+  font: 400 14px/20px var(--font-ui);
+  color: var(--color-slate);
+}
+
+.filters {
+  margin-bottom: 24px;
+}
+
+.chip__count {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* Lista agrupada por horário */
+.agenda {
+  padding: 0 24px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: start;
+  gap: 16px;
+  padding: 20px 0;
+
+  p {
+    margin: 0;
+  }
+
+  &.is-cancelled .row__main {
+    opacity: 0.6;
+  }
+}
+
+.row__time {
+  white-space: nowrap;
+  padding-top: 12px;
+  font: 500 18px/24px var(--font-display);
+}
+
+.row__pet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  strong {
+    display: block;
+    font: 500 18px/24px var(--font-display);
+  }
+}
+
+.row__meta {
+  font: 400 14px/20px var(--font-ui);
+  color: var(--color-slate);
+}
+
+.row__info {
+  margin-top: 8px !important;
+  font: 400 14px/22px var(--font-ui);
+  color: var(--color-graphite);
+}
+
+.row__phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-ink);
+  text-underline-offset: 3px;
+  padding: 8px 0;
+
+  ion-icon {
+    font-size: 16px;
+  }
+}
+
+.row__notes {
+  margin-top: 4px !important;
+  font: 400 14px/22px var(--font-ui);
+  color: var(--color-graphite);
+}
+
+.row__status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.status-select {
+  width: 172px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.empty--wide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+
+  img {
+    height: 100%;
+    aspect-ratio: auto;
+    min-height: 220px;
+  }
+}
+
+/* Celular: a linha vira bloco */
+@media (max-width: 720px) {
+  .stats {
+    grid-template-columns: 1fr 1fr;
+
+    li:last-child {
+      grid-column: span 2;
+    }
+  }
+
+  .row {
+    grid-template-columns: 56px 1fr;
+    gap: 12px;
+  }
+
+  .row__status {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .empty--wide {
+    grid-template-columns: 1fr;
+
+    img {
+      aspect-ratio: 16 / 9;
+      min-height: 0;
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .agenda {
+    padding: 0 16px;
+  }
+}

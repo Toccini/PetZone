@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 8px 24px calc(env(safe-area-inset-bottom, 0px) + 24px);
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 24px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 360px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

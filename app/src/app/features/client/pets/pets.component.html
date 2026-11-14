@@ -1,1 +1,67 @@
-<p>pets works!</p>
+<ion-content>
+  <div class="page">
+    <app-client-header />
+
+    <main id="main">
+      <div class="title-row">
+        <h1 class="heading">Meus pets</h1>
+        @if (pets().length) {
+        <button type="button" class="btn btn--dark btn--auto" (click)="formOpen.set(true)">
+          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+          Cadastrar pet
+        </button>
+        }
+      </div>
+
+      <div aria-live="polite">
+        @if (message()) {
+        <p class="notice">{{ message() }}</p>
+        }
+      </div>
+      @if (error()) {
+      <p class="form-error" role="alert">{{ error() }}</p>
+      }
+
+      @if (loading()) {
+      <p class="loading-text">Carregando pets…</p>
+      } @else if (pets().length === 0) {
+      <div class="card empty">
+        <img src="/img/cat-tabby.jpg" alt="" width="900" height="600" />
+        <div class="empty__body">
+          <p>Você ainda não tem pets. Cadastre o primeiro para agendar banho, tosa, consulta ou vacinação.</p>
+          <button type="button" class="btn btn--dark" (click)="formOpen.set(true)">
+            <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+            Cadastrar pet
+          </button>
+        </div>
+      </div>
+      } @else {
+      <ul class="pets" role="list">
+        @for (p of pets(); track p.id) {
+        <li>
+          <app-pet-card [pet]="p">
+            <div actions class="pet-actions">
+              <button type="button" class="icon-btn" (click)="book(p)" [attr.aria-label]="'Agendar serviço para ' + p.name">
+                <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+              </button>
+              <button type="button" class="icon-btn" (click)="remove(p)" [attr.aria-label]="'Remover ' + p.name">
+                <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+              </button>
+            </div>
+          </app-pet-card>
+        </li>
+        }
+      </ul>
+      }
+    </main>
+  </div>
+
+  <ion-modal class="sheet-modal" [isOpen]="formOpen()" (didDismiss)="formOpen.set(false)"
+    [initialBreakpoint]="1" [breakpoints]="[0, 1]" [handle]="true">
+    <ng-template>
+      <ion-content>
+        <app-pet-form (saved)="onSaved($event)" (cancelled)="formOpen.set(false)" />
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

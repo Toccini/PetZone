@@ -1,1 +1,186 @@
-<p>booking works!</p>
+<ion-content>
+  <div class="page">
+    <app-client-header />
+
+    @if (done(); as a) {
+    <!-- Sucesso -->
+    <main id="main" class="done" aria-labelledby="done-title">
+      <figure class="done__photo">
+        <img src="/img/dog-bath.jpg" alt="" width="900" height="600" />
+      </figure>
+      <h1 id="done-title" class="heading" tabindex="-1">Agendamento confirmado</h1>
+      <p class="notice">
+        {{ a.service.title }} de {{ a.pet.name }} em {{ longDate(a.date_time) }}, às {{ a.date_time.slice(11, 16) }}.
+        Chegue com 10 minutos de antecedência.
+      </p>
+      <div class="done__actions">
+        <button type="button" class="btn btn--dark" (click)="goHome()">Ver meus agendamentos</button>
+        <button type="button" class="btn btn--light" (click)="ionViewWillEnter()">Agendar outro serviço</button>
+      </div>
+    </main>
+    } @else {
+    <main id="main">
+      <h1 class="heading title">Agendar serviço</h1>
+
+      <!-- Indicador de progresso -->
+      <div class="progress">
+        <p class="progress__text" aria-live="polite">Passo {{ step() }} de 4</p>
+        <div class="progress__bar" role="progressbar" aria-label="Progresso do agendamento"
+          aria-valuemin="1" aria-valuemax="4" [attr.aria-valuenow]="step()"
+          [attr.aria-valuetext]="'Passo ' + step() + ' de 4: ' + STEP_TITLES[step()]">
+          @for (s of steps; track s) {
+          <span class="progress__seg" [class.is-on]="s <= step()"></span>
+          }
+        </div>
+      </div>
+
+      <h2 #stepHeading class="heading-sm step-title" tabindex="-1">{{ STEP_TITLES[step()] }}</h2>
+
+      @if (error()) {
+      <p class="form-error" role="alert">{{ error() }}</p>
+      }
+
+      @if (loading()) {
+      <p class="loading-text">Carregando…</p>
+      } @else {
+      @switch (step()) {
+
+      <!-- 1. Pet -->
+      @case (1) {
+      @if (pets().length === 0) {
+      <div class="card empty">
+        <img src="/img/dog-and-cat.jpg" alt="" width="900" height="600" />
+        <div class="empty__body">
+          <p>Para agendar, cadastre primeiro o seu pet.</p>
+          <button type="button" class="btn btn--dark" (click)="petFormOpen.set(true)">
+            <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+            Cadastrar pet
+          </button>
+        </div>
+      </div>
+      } @else {
+      <div class="options" role="radiogroup" aria-label="Pets">
+        @for (p of pets(); track p.id) {
+        <button type="button" role="radio" class="card card--selectable option"
+          [attr.aria-checked]="petId() === p.id" (click)="petId.set(p.id)">
+          <span class="avatar" aria-hidden="true">{{ p.name.charAt(0).toUpperCase() }}</span>
+          <span class="option__text">
+            <span class="option__title">{{ p.name }}</span>
+            <span class="option__meta">{{ SPECIES_LABEL[p.species] }} · {{ p.breed }}</span>
+          </span>
+          <span class="option__state">{{ petId() === p.id ? 'Selecionado' : '' }}</span>
+        </button>
+        }
+      </div>
+      <button type="button" class="link add-pet" (click)="petFormOpen.set(true)">Cadastrar outro pet</button>
+      }
+      }
+
+      <!-- 2. Serviço -->
+      @case (2) {
+      <div class="options" role="radiogroup" aria-label="Serviços">
+        @for (s of services(); track s.id) {
+        <button type="button" role="radio" class="card card--selectable option"
+          [attr.aria-checked]="serviceId() === s.id" (click)="serviceId.set(s.id)">
+          <span class="icon-circle" aria-hidden="true"><ion-icon [name]="serviceIcon(s.title)"></ion-icon></span>
+          <span class="option__text">
+            <span class="option__title">{{ s.title }}</span>
+            <span class="option__meta">{{ s.duration_minutes }} min</span>
+          </span>
+          <span class="option__price">{{ money(s.price) }}</span>
+        </button>
+        }
+      </div>
+      }
+
+      <!-- 3. Dia e horário -->
+      @case (3) {
+      <div class="calendar card">
+        <ion-datetime presentation="date" locale="pt-BR" [firstDayOfWeek]="0" [value]="date()"
+          [min]="minDate" [max]="maxDate" [isDateEnabled]="isOpenDay"
+          (ionChange)="onDateChange($event.detail.value)" aria-label="Escolha a data"></ion-datetime>
+      </div>
+      <p class="hours-note">
+        <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+        Segunda a sábado, das 8h às 18h. Fechado aos domingos.
+      </p>
+
+      <h3 class="slots-title" id="slots-title">Horários de {{ longDate(date()) }}</h3>
+      @if (slotsLoading()) {
+      <p class="loading-text">Carregando horários…</p>
+      } @else if (freeSlots() === 0) {
+      <p class="notice">Sem horários livres neste dia. Escolha outra data.</p>
+      } @else {
+      <div class="slots" role="radiogroup" aria-labelledby="slots-title">
+        @for (s of slots(); track s.time) {
+        @if (s.available) {
+        <button type="button" role="radio" class="slot" [attr.aria-checked]="time() === s.time"
+          (click)="time.set(s.time)">{{ s.time }}</button>
+        } @else {
+        <span class="slot is-off" aria-disabled="true">
+          {{ s.time }}<span class="sr-only"> indisponível</span>
+        </span>
+        }
+        }
+      </div>
+      }
+      }
+
+      <!-- 4. Confirmação: faixa escura com cartão branco -->
+      @case (4) {
+      <section class="band-dark summary" aria-label="Resumo do agendamento">
+        <div class="card summary__card">
+          <dl>
+            <div><dt>Pet</dt><dd>{{ pet()?.name }}</dd></div>
+            <div><dt>Serviço</dt><dd>{{ service()?.title }} · {{ service()?.duration_minutes }} min</dd></div>
+            <div><dt>Data e hora</dt><dd>{{ longDate(date()) }}, às {{ time() }}</dd></div>
+          </dl>
+          <p class="summary__price"><span class="sr-only">Valor: </span>{{ money(service()?.price ?? 0) }}</p>
+        </div>
+
+        <div class="field summary__notes">
+          <label class="field__label" for="notes">Observações para a equipe</label>
+          <textarea id="notes" class="input" [(ngModel)]="notes" maxlength="300"
+            placeholder="Ex.: ele fica nervoso com secador" aria-describedby="notes-hint"></textarea>
+          <p id="notes-hint" class="field__hint">Opcional</p>
+        </div>
+      </section>
+      }
+      }
+      }
+    </main>
+    }
+  </div>
+
+  <ion-modal class="sheet-modal" [isOpen]="petFormOpen()" (didDismiss)="petFormOpen.set(false)"
+    [initialBreakpoint]="1" [breakpoints]="[0, 1]" [handle]="true">
+    <ng-template>
+      <ion-content>
+        <app-pet-form (saved)="onPetSaved($event)" (cancelled)="petFormOpen.set(false)" />
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>
+
+<!-- Rodapé fixo do wizard -->
+@if (!done() && !loading() && pets().length > 0) {
+<ion-footer class="wizard-footer" [class.is-dark]="step() === 4">
+  @if (hint()) {
+  <p class="wizard-footer__hint" aria-live="polite">{{ hint() }}</p>
+  }
+  <div class="wizard-footer__actions">
+    @if (step() > 1) {
+    <button type="button" class="btn" [class.btn--light]="step() !== 4" [class.btn--ghost-dark]="step() === 4"
+      (click)="back()">Voltar</button>
+    }
+    <button type="button" class="btn" [class.btn--dark]="step() !== 4" [class.btn--inverse]="step() === 4"
+      [attr.aria-disabled]="!canContinue() || submitting() ? 'true' : null" (click)="next()">
+      @if (step() === 4) {
+      {{ submitting() ? 'Confirmando…' : 'Confirmar agendamento' }}
+      } @else {
+      Continuar
+      }
+    </button>
+  </div>
+</ion-footer>
+}

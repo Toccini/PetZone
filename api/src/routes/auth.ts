@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { pool } from '../db';
+import { supabase } from '../db';
 
 const router = Router();
 
@@ -13,27 +13,40 @@ const publicUser = (u: any) => ({
   id: u.id, name: u.name, email: u.email, phone: u.phone, role: u.role,
 });
 
+const findUserByEmail = async (email: string) => {
+  const { data, error } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
+  if (error) throw error;
+  return data;
+};
+
 // Cadastro de cliente (autocadastro)
 router.post('/register', async (req, res) => {
   const { name, email, phone, cpf, password } = req.body;
   if (!name || !email || !phone || !password || password.length < 6) {
     return res.status(400).json({ message: 'Dados inválidos (senha com mínimo de 6 caracteres)' });
   }
-  const { rows: exists } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
-  if (exists.length) return res.status(409).json({ message: 'E-mail já cadastrado' });
+  if (await findUserByEmail(email)) {
+    return res.status(409).json({ message: 'E-mail já cadastrado' });
+  }
 
-  const { rows: [user] } = await pool.query(
-    `INSERT INTO users (name, email, phone, cpf, password_hash, role)
-     VALUES ($1, $2, $3, $4, $5, 'CLIENT') RETURNING *`,
-    [name, email, phone, cpf ?? null, bcrypt.hashSync(password, 10)]
-  );
+  const { data: user, error } = await supabase
+    .from('users')
+    .insert({
+      name, email, phone, cpf: cpf ?? null,
+      password_hash: bcrypt.hashSync(password, 10),
+      role: 'CLIENT',
+    })
+    .select()
+    .single();
+  if (error) throw error;
+
   res.status(201).json({ token: sign(user), user: publicUser(user) });
 });
 
 // Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  const { rows: [user] } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+  const user = email ? await findUserByEmail(email) : null;
   if (!user || !bcrypt.compareSync(password ?? '', user.password_hash)) {
     return res.status(401).json({ message: 'E-mail ou senha inválidos' });
   }
@@ -43,17 +56,18 @@ router.post('/login', async (req, res) => {
 // Esqueci a senha: gera token e "envia" o link
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
-  const { rows: [user] } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+  const user = email ? await findUserByEmail(email) : null;
 
   if (user) {
     const token = crypto.randomBytes(32).toString('hex');
     const hash = crypto.createHash('sha256').update(token).digest('hex');
     const expires = Date.now() + 30 * 60 * 1000; // 30 min
 
-    await pool.query(
-      'UPDATE users SET reset_token_hash = $1, reset_expires_at = $2 WHERE id = $3',
-      [hash, expires, user.id]
-    );
+    const { error } = await supabase
+      .from('users')
+      .update({ reset_token_hash: hash, reset_expires_at: expires })
+      .eq('id', user.id);
+    if (error) throw error;
 
     // TODO: enviar por e-mail (nodemailer). Por enquanto, aparece no console da API:
     console.log(`[RESET] Link: http://localhost:8100/reset-password?token=${token}`);
@@ -70,17 +84,25 @@ router.post('/reset-password', async (req, res) => {
     return res.status(400).json({ message: 'Dados inválidos' });
   }
   const hash = crypto.createHash('sha256').update(token).digest('hex');
-  const { rows: [user] } = await pool.query(
-    'SELECT id FROM users WHERE reset_token_hash = $1 AND reset_expires_at > $2',
-    [hash, Date.now()]
-  );
+  const { data: user, error } = await supabase
+    .from('users')
+    .select('id')
+    .eq('reset_token_hash', hash)
+    .gt('reset_expires_at', Date.now())
+    .maybeSingle();
+  if (error) throw error;
 
   if (!user) return res.status(400).json({ message: 'Token inválido ou expirado' });
 
-  await pool.query(
-    'UPDATE users SET password_hash = $1, reset_token_hash = NULL, reset_expires_at = NULL WHERE id = $2',
-    [bcrypt.hashSync(newPassword, 10), user.id]
-  );
+  const upd = await supabase
+    .from('users')
+    .update({
+      password_hash: bcrypt.hashSync(newPassword, 10),
+      reset_token_hash: null,
+      reset_expires_at: null,
+    })
+    .eq('id', user.id);
+  if (upd.error) throw upd.error;
 
   res.json({ message: 'Senha redefinida com sucesso' });
 });

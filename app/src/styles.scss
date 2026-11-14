@@ -1,1 +1,666 @@
-/* Estilos globais. Os CSS do Ionic são carregados pelo angular.json */
+/* =====================================================================
+   PetShop: estilos globais
+   Referência: design.md (tokens, componentes e regras de acessibilidade)
+   Este arquivo é carregado depois dos CSS do Ionic (angular.json).
+   ===================================================================== */
+
+/* ---------- 1. Tokens (design.md, seção 14) ---------- */
+:root {
+  color-scheme: light;
+
+  /* Cores */
+  --color-ink: #1f1f1f;
+  --color-pure-black: #000000;
+  --color-bone: #ffffff;
+  --color-ash-grey: #c9c9cd;
+  --color-mist: #f7f7f7;
+  --color-slate: #717173;
+  --color-graphite: #4c4c4c;
+  --gradient-cobalt-wash: linear-gradient(to right, #1227fd, #6fa0ff);
+
+  /* Fontes */
+  --font-display: 'DM Sans Variable', 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Escala tipográfica */
+  --text-caption: 12px;
+  --text-body-sm: 14px;
+  --text-body: 16px;
+  --text-subheading: 18px;
+  --text-heading-sm: 24px;
+  --text-heading: 32px;
+  --text-heading-lg: 40px;
+  --text-display: 52px;
+
+  /* Espaçamento */
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-56: 56px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+
+  /* Raios */
+  --radius-pill: 9999px;
+  --radius-card: 22.5px;
+  --radius-list: 20px;
+  --radius-control: 12px;
+
+  /* Layout */
+  --page-max-width: 1200px;
+  --form-max-width: 480px;
+  --card-padding: 24px;
+
+  /* Foto do céu das telas de entrada (design.md, 7.1) */
+  --auth-sky-photo: url('/img/sky.jpg');
+}
+
+/* Variáveis do Ionic alinhadas ao design (html:root vence o :root do Ionic) */
+html:root {
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255, 255, 255;
+  --ion-text-color: #1f1f1f;
+  --ion-text-color-rgb: 31, 31, 31;
+  --ion-font-family: var(--font-ui);
+
+  --ion-color-primary: #1f1f1f;
+  --ion-color-primary-rgb: 31, 31, 31;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #000000;
+  --ion-color-primary-tint: #4c4c4c;
+
+  --ion-toolbar-background: #ffffff;
+  --ion-toolbar-color: #1f1f1f;
+  --ion-tab-bar-background: #ffffff;
+  --ion-tab-bar-color: #717173;
+  --ion-tab-bar-color-selected: #1f1f1f;
+  --ion-tab-bar-border-color: #c9c9cd;
+  --ion-border-color: #c9c9cd;
+  --ion-item-background: #ffffff;
+}
+
+/* ---------- 2. Base ---------- */
+body {
+  background: var(--color-bone);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Foco visível por teclado em tudo que é interativo */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+/* Texto só para leitores de tela */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Respeita quem pediu menos movimento no sistema */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- 3. Tipografia utilitária ---------- */
+.display {
+  margin: 0;
+  font: 500 clamp(40px, 11vw, 52px) / 1 var(--font-display);
+  letter-spacing: -0.012em;
+}
+
+.heading {
+  margin: 0;
+  font: 500 var(--text-heading) / 38px var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.heading-sm {
+  margin: 0;
+  font: 500 var(--text-heading-sm) / 28px var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.subheading {
+  margin: 0;
+  font: 400 var(--text-subheading) / 24px var(--font-display);
+}
+
+.muted {
+  color: var(--color-slate);
+}
+
+.center {
+  text-align: center;
+}
+
+/* ---------- 4. Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  width: 100%;
+  min-height: 52px;
+  padding: 0 var(--spacing-24);
+  box-sizing: border-box;
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  font: 600 16px/1 var(--font-ui);
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+
+  &:hover:not(:disabled):not([aria-disabled='true']) {
+    opacity: 0.8;
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  ion-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+}
+
+.btn--dark {
+  background: var(--color-ink);
+  color: var(--color-bone);
+}
+
+.btn--light {
+  background: var(--color-bone);
+  color: var(--color-ink);
+}
+
+/* Pílula branca sobre faixa escura */
+.btn--inverse {
+  background: var(--color-bone);
+  color: var(--color-ink);
+  border-color: var(--color-bone);
+}
+
+/* Pílula fantasma (sobre foto ou cabeçalho) */
+.btn--ghost {
+  width: auto;
+  min-height: 44px;
+  padding: 0 var(--spacing-16);
+  border-width: 1px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--color-ink);
+  font-size: 14px;
+}
+
+.btn--ghost-dark {
+  width: auto;
+  min-height: 44px;
+  padding: 0 var(--spacing-16);
+  border: 1px solid var(--color-bone);
+  background: transparent;
+  color: var(--color-bone);
+  font-size: 14px;
+}
+
+.btn--auto {
+  width: auto;
+}
+
+/* Botão só com ícone: área de toque de 44px */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--color-ash-grey);
+  border-radius: var(--radius-pill);
+  background: var(--color-bone);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: border-color 150ms ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-ink);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+/* ---------- 5. Link ---------- */
+.link {
+  display: block;
+  color: rgba(31, 31, 31, 0.8);
+  font: 500 14px/20px var(--font-ui);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 12px 0; /* área de toque */
+
+  &:hover {
+    color: var(--color-ink);
+  }
+}
+
+/* ---------- 6. Formulário ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  margin-bottom: 20px;
+}
+
+.field__label {
+  font: 600 14px/20px var(--font-ui);
+  color: var(--color-ink);
+}
+
+.input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-ash-grey);
+  border-radius: var(--radius-pill);
+  background: var(--color-bone);
+  color: var(--color-ink);
+  font: 400 16px/24px var(--font-ui); /* 16px evita zoom automático no iOS */
+  transition: border-color 150ms ease;
+  appearance: none;
+
+  &::placeholder {
+    color: var(--color-slate);
+  }
+
+  &:focus,
+  &:focus-visible,
+  &[aria-invalid='true'] {
+    outline: none;
+    border-color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px var(--color-ink); /* borda de 2px sem mexer no layout */
+  }
+}
+
+textarea.input {
+  min-height: 112px;
+  padding: 14px 20px;
+  border-radius: var(--radius-list);
+  resize: vertical;
+}
+
+select.input {
+  padding-right: 48px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%231f1f1f' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 20px center;
+}
+
+/* Campo com ícone (ex.: busca com lupa) */
+.input-icon {
+  position: relative;
+
+  ion-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--color-slate);
+    pointer-events: none;
+  }
+
+  .input {
+    padding-left: 52px;
+  }
+}
+
+.field__hint {
+  margin: 0;
+  font: 400 12px/18px var(--font-ui);
+  color: var(--color-slate);
+}
+
+.field__error {
+  margin: 0;
+  font: 500 14px/20px var(--font-ui);
+  color: var(--color-ink);
+}
+
+.form-error {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-ash-grey);
+  border-radius: var(--radius-control);
+  background: var(--color-mist);
+  font: 500 14px/20px var(--font-ui);
+  color: var(--color-ink);
+}
+
+.notice {
+  margin: 0 0 20px;
+  font: 400 16px/24px var(--font-ui);
+  color: var(--color-graphite);
+}
+
+.divider {
+  margin: var(--spacing-24) 0;
+  border: 0;
+  border-top: 1px solid var(--color-ash-grey);
+}
+
+/* ---------- 7. Superfícies ---------- */
+.card {
+  padding: var(--card-padding);
+  border: 1px solid var(--color-ash-grey);
+  border-radius: var(--radius-card);
+  background: var(--color-bone);
+}
+
+/* Cartão selecionável (wizard): é um <button> ou <label> */
+.card--selectable {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+  width: 100%;
+  text-align: left;
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: border-color 150ms ease;
+
+  &:hover {
+    border-color: var(--color-ink);
+  }
+
+  &[aria-checked='true'],
+  &[aria-pressed='true'] {
+    border-color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+  }
+}
+
+.list-group {
+  margin: 0;
+  padding: 8px var(--spacing-24);
+  list-style: none;
+  border-radius: var(--radius-list);
+  background: var(--color-mist);
+
+  > li + li {
+    border-top: 1px solid var(--color-ash-grey);
+  }
+}
+
+/* Faixa escura (inversão claro/escuro) */
+.band-dark {
+  background: var(--color-ink);
+  color: var(--color-bone);
+}
+
+/* Faixa promocional: único uso de cor da interface, no máximo uma por tela */
+.promo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  min-height: 40px;
+  padding: 8px var(--spacing-16);
+  background: var(--gradient-cobalt-wash);
+  color: #ffffff;
+  font: 400 14px/20px var(--font-ui);
+  text-align: center;
+
+  a {
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* ---------- 8. Chips, badges e avatar ---------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px; /* 36px visual + área de toque: usamos 44px direto */
+  padding: 0 var(--spacing-16);
+  border: 1px solid var(--color-ash-grey);
+  border-radius: var(--radius-pill);
+  background: var(--color-bone);
+  color: var(--color-ink);
+  font: 600 14px/1 var(--font-ui);
+  cursor: pointer;
+  transition: border-color 150ms ease;
+
+  &:hover {
+    border-color: var(--color-ink);
+  }
+
+  &[aria-pressed='true'],
+  &[aria-checked='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-bone);
+  }
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  background: var(--color-bone);
+  color: var(--color-ink);
+  font: 600 12px/1 var(--font-ui);
+  letter-spacing: 0.015em;
+  white-space: nowrap;
+}
+
+.badge--IN_PROGRESS {
+  background: var(--color-ink);
+  color: var(--color-bone);
+}
+
+.badge--COMPLETED {
+  background: var(--color-mist);
+  border-color: var(--color-ash-grey);
+  color: var(--color-slate);
+}
+
+.badge--CANCELLED {
+  border-color: var(--color-ash-grey);
+  color: var(--color-slate);
+  text-decoration: line-through;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  background: var(--color-mist);
+  border: 1px solid var(--color-ash-grey);
+  color: var(--color-ink);
+  font: 500 24px/1 var(--font-display);
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  ion-icon {
+    font-size: 26px;
+  }
+}
+
+/* Ícone em círculo (serviços, linhas de lista) */
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-ash-grey);
+  background: var(--color-bone);
+  color: var(--color-ink);
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+/* ---------- 9. Layout de páginas do app ---------- */
+.page {
+  width: 100%;
+  max-width: var(--form-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-24) var(--spacing-24) calc(env(safe-area-inset-bottom, 0px) + var(--spacing-40));
+  box-sizing: border-box;
+}
+
+.page--wide {
+  max-width: var(--page-max-width);
+}
+
+.section {
+  margin-top: var(--spacing-32);
+}
+
+.section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-16);
+
+  h2 {
+    margin: 0;
+    font: 500 var(--text-heading-sm) / 28px var(--font-display);
+    letter-spacing: -0.01em;
+    color: var(--color-slate);
+  }
+
+  .link {
+    padding: 12px 0;
+  }
+}
+
+/* Cabeçalho das telas internas: título à esquerda, ação à direita */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 20px/1 var(--font-display);
+  letter-spacing: -0.01em;
+  color: inherit;
+  text-decoration: none;
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+/* Estado vazio com foto */
+.empty {
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+
+  img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .empty__body {
+    padding: var(--card-padding);
+  }
+
+  p {
+    margin: 0 0 var(--spacing-16);
+    font: 400 16px/24px var(--font-ui);
+    color: var(--color-graphite);
+  }
+}
+
+/* Carregamento: texto, sem spinner colorido */
+.loading-text {
+  margin: var(--spacing-16) 0;
+  font: 500 14px/20px var(--font-ui);
+  color: var(--color-slate);
+}
+
+/* Modal em folha inferior (design.md, 8) */
+ion-modal.sheet-modal {
+  --border-radius: 22.5px;
+  --background: #ffffff;
+}

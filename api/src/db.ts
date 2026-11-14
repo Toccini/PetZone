@@ -1,31 +1,43 @@
-import { Pool } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL não definida no .env');
+const url = process.env.SUPABASE_URL;
+const key = process.env.SUPABASE_SERVICE_KEY;
+if (!url || !key) {
+  throw new Error('SUPABASE_URL e SUPABASE_SERVICE_KEY precisam estar no .env');
 }
 
-// Conexão com o Postgres do Supabase (as tabelas são criadas pelo SQL Editor do Supabase)
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
+// Conexão com o Supabase via HTTPS (porta 443, funciona em qualquer rede).
+// A chave service_role fica só na API — nunca no app.
+export const supabase = createClient(url, key, {
+  auth: { persistSession: false, autoRefreshToken: false },
 });
 
 // Seed: serviços e um admin inicial (só se estiver vazio)
 export async function initDb(): Promise<void> {
-  const { rows: [s] } = await pool.query('SELECT COUNT(*)::int AS c FROM services');
-  if (s.c === 0) {
-    await pool.query(
-      `INSERT INTO services (title, duration_minutes, price) VALUES
-        ('Banho', 60, 50), ('Tosa', 60, 70), ('Consulta', 60, 120), ('Vacinação', 60, 90)`
-    );
+  const services = await supabase.from('services').select('id', { count: 'exact' }).limit(1);
+  if (services.error) throw services.error;
+  if (services.count === 0) {
+    const { error } = await supabase.from('services').insert([
+      { title: 'Banho', duration_minutes: 60, price: 50 },
+      { title: 'Tosa', duration_minutes: 60, price: 70 },
+      { title: 'Consulta', duration_minutes: 60, price: 120 },
+      { title: 'Vacinação', duration_minutes: 60, price: 90 },
+    ]);
+    if (error) throw error;
   }
 
-  const { rows: [a] } = await pool.query("SELECT COUNT(*)::int AS c FROM users WHERE role = 'ADMIN'");
-  if (a.c === 0) {
-    await pool.query(
-      'INSERT INTO users (name, email, phone, password_hash, role) VALUES ($1, $2, $3, $4, $5)',
-      ['Administrador', 'admin@petshop.com', '00000000000', bcrypt.hashSync('admin123', 10), 'ADMIN']
-    );
+  const admins = await supabase
+    .from('users').select('id', { count: 'exact' }).eq('role', 'ADMIN').limit(1);
+  if (admins.error) throw admins.error;
+  if (admins.count === 0) {
+    const { error } = await supabase.from('users').insert({
+      name: 'Administrador',
+      email: 'admin@petshop.com',
+      phone: '00000000000',
+      password_hash: bcrypt.hashSync('admin123', 10),
+      role: 'ADMIN',
+    });
+    if (error) throw error;
   }
 }

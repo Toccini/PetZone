@@ -34,7 +34,8 @@
               }
             ],
             "styles": [
-              "src/styles.scss",
+              "node_modules/@fontsource-variable/inter/index.css",
+              "node_modules/@fontsource-variable/dm-sans/index.css",
               {
                 "input": "node_modules/@ionic/angular/css/core.css"
               },
@@ -67,7 +68,8 @@
               },
               {
                 "input": "src/theme/variables.css"
-              }
+              },
+              "src/styles.scss"
             ]
           },
           "configurations": {

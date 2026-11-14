@@ -1,0 +1,286 @@
+.title {
+  margin: 24px 0 16px;
+}
+
+/* Indicador: "Passo 2 de 4" + barra de 4 segmentos */
+.progress__text {
+  margin: 0 0 8px;
+  font: 500 14px/20px var(--font-ui);
+  color: var(--color-slate);
+}
+
+.progress__bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.progress__seg {
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--color-ash-grey);
+
+  &.is-on {
+    background: var(--color-ink);
+  }
+}
+
+.step-title {
+  margin: 32px 0 20px;
+  outline: none;
+}
+
+/* Cartões selecionáveis */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option {
+  min-height: 88px;
+  padding: 16px 20px;
+}
+
+.option__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.option__title {
+  font: 500 24px/28px var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.option__meta {
+  margin-top: 2px;
+  font: 400 14px/20px var(--font-ui);
+  color: var(--color-slate);
+}
+
+.option__price {
+  font: 500 24px/1 var(--font-display);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* "Selecionado" em texto: o estado não depende só da borda */
+.option__state {
+  font: 600 12px/1 var(--font-ui);
+  letter-spacing: 0.015em;
+}
+
+.add-pet {
+  margin-top: 8px;
+}
+
+/* Calendário */
+.calendar {
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+ion-datetime {
+  --background: #ffffff;
+  --background-rgb: 255, 255, 255;
+  --ion-color-primary: #1f1f1f;
+  --ion-color-primary-rgb: 31, 31, 31;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-text-color: #1f1f1f;
+  width: 100%;
+  max-width: 360px;
+}
+
+.hours-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  font: 400 14px/20px var(--font-ui);
+  color: var(--color-graphite);
+
+  ion-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+}
+
+.slots-title {
+  margin: 32px 0 12px;
+  font: 500 18px/24px var(--font-display);
+}
+
+/* Grade de horários em pílulas */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border: 1px solid var(--color-ash-grey);
+  border-radius: var(--radius-pill);
+  background: var(--color-bone);
+  color: var(--color-ink);
+  font: 600 16px/1 var(--font-ui);
+  cursor: pointer;
+  transition: border-color 150ms ease;
+
+  &:hover {
+    border-color: var(--color-ink);
+  }
+
+  &[aria-checked='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-bone);
+  }
+
+  &.is-off {
+    opacity: 0.4;
+    text-decoration: line-through;
+    cursor: not-allowed;
+
+    &:hover {
+      border-color: var(--color-ash-grey);
+    }
+  }
+}
+
+/* Passo 4: inversão claro/escuro */
+.summary {
+  margin: 0 -24px;
+  padding: 32px 24px;
+}
+
+.summary__card {
+  dl {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  dt {
+    font: 400 14px/20px var(--font-ui);
+    color: var(--color-slate);
+  }
+
+  dd {
+    margin: 2px 0 0;
+    font: 500 18px/24px var(--font-display);
+    color: var(--color-ink);
+  }
+}
+
+.summary__price {
+  margin: 24px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-ash-grey);
+  font: 500 32px/1 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.summary__notes {
+  margin: 24px 0 0;
+
+  .field__label {
+    color: var(--color-bone);
+  }
+
+  .field__hint {
+    color: #c9c9cd;
+  }
+
+  .input:focus {
+    border-color: var(--color-bone);
+    box-shadow: inset 0 0 0 1px var(--color-bone);
+  }
+}
+
+/* Rodapé fixo */
+.wizard-footer {
+  padding: 12px 24px calc(env(safe-area-inset-bottom, 0px) + 12px);
+  background: var(--color-bone);
+  border-top: 1px solid var(--color-ash-grey);
+  box-shadow: none;
+
+  &.is-dark {
+    background: var(--color-ink);
+    border-top-color: var(--color-ink);
+
+    .wizard-footer__hint {
+      color: var(--color-ash-grey);
+    }
+  }
+}
+
+.wizard-footer__hint {
+  max-width: 480px;
+  margin: 0 auto 8px;
+  font: 400 14px/20px var(--font-ui);
+  color: var(--color-slate);
+}
+
+.wizard-footer__actions {
+  display: flex;
+  gap: 12px;
+  max-width: 480px;
+  margin: 0 auto;
+
+  .btn {
+    flex: 1;
+  }
+
+  .btn--ghost-dark {
+    flex: 0 0 auto;
+    min-height: 52px;
+    padding: 0 24px;
+    font-size: 16px;
+  }
+}
+
+/* Sucesso */
+.done {
+  padding-top: 24px;
+
+  h1 {
+    margin: 24px 0 12px;
+    outline: none;
+  }
+}
+
+.done__photo {
+  margin: 0;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  background: var(--color-mist);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.done__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Rodapé: botões mais compactos para "Confirmar agendamento" caber em uma linha */
+.wizard-footer__actions .btn {
+  padding: 0 16px;
+  white-space: nowrap;
+}

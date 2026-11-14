@@ -1,1 +1,103 @@
-<p>home works!</p>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="load($event)">
+    <ion-refresher-content pullingText="Puxe para atualizar" refreshingText="Atualizando…"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="page">
+    <app-client-header />
+
+    <main id="main">
+      <section class="hero" aria-labelledby="greeting">
+        <h1 id="greeting" class="heading">Olá, {{ name() }}</h1>
+        <p class="subheading hero__sub">Banho, tosa e cuidados para quem você ama.</p>
+
+        <figure class="hero__photo">
+          <img src="/img/dog-beagle.jpg" alt="" width="900" height="600" />
+        </figure>
+
+        <a class="btn btn--dark" routerLink="/client/booking">
+          <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+          Agendar serviço
+        </a>
+      </section>
+
+      <!-- Mensagens lidas pelo leitor de tela -->
+      <div aria-live="polite" class="live">
+        @if (message()) {
+        <p class="notice">{{ message() }}</p>
+        }
+      </div>
+      @if (error()) {
+      <p class="form-error" role="alert">{{ error() }}</p>
+      }
+
+      <section class="section" aria-labelledby="next-title">
+        <div class="section__head">
+          <h2 id="next-title">Próximos agendamentos</h2>
+        </div>
+
+        @if (loading()) {
+        <p class="loading-text">Carregando agendamentos…</p>
+        } @else if (upcoming().length === 0) {
+        <div class="card empty-inline">
+          <p>Nenhum agendamento por enquanto. Que tal um banho esta semana?</p>
+          <a class="link" routerLink="/client/booking">Agendar serviço</a>
+        </div>
+        } @else {
+        <ul class="appts" role="list">
+          @for (a of upcoming(); track a.id) {
+          <li class="card appt">
+            <span class="icon-circle" aria-hidden="true">
+              <ion-icon [name]="serviceIcon(a.service.title)"></ion-icon>
+            </span>
+            <div class="appt__body">
+              <p class="appt__when">
+                {{ relativeDay(a.date_time) }}, {{ timeOf(a.date_time) }}
+                <span class="sr-only">({{ longDate(a.date_time) }})</span>
+              </p>
+              <p class="appt__what">{{ a.pet.name }} · {{ a.service.title }} · {{ money(a.service.price) }}</p>
+              @if (a.status === 'CONFIRMED') {
+              <button type="button" class="link appt__cancel" (click)="cancel(a)">
+                Cancelar<span class="sr-only"> {{ a.service.title }} de {{ a.pet.name }}</span>
+              </button>
+              }
+            </div>
+            <span [class]="'badge badge--' + a.status">{{ STATUS_LABEL[a.status] }}</span>
+          </li>
+          }
+        </ul>
+        }
+      </section>
+
+      <section class="section" aria-labelledby="pets-title">
+        <div class="section__head">
+          <h2 id="pets-title">Seus pets</h2>
+          @if (pets().length) {
+          <a class="link" routerLink="/client/pets">Ver todos</a>
+          }
+        </div>
+
+        @if (loading()) {
+        <p class="loading-text">Carregando pets…</p>
+        } @else if (pets().length === 0) {
+        <div class="card empty">
+          <img src="/img/dog-aussie.jpg" alt="" width="900" height="600" loading="lazy" />
+          <div class="empty__body">
+            <p>Você ainda não tem pets. Cadastre o primeiro.</p>
+            <a class="btn btn--light" routerLink="/client/pets">
+              <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+              Cadastrar pet
+            </a>
+          </div>
+        </div>
+        } @else {
+        <ul class="carousel" role="list" aria-label="Seus pets">
+          @for (p of pets(); track p.id) {
+          <li><app-pet-card [pet]="p" /></li>
+          }
+        </ul>
+        }
+      </section>
+    </main>
+  </div>
+</ion-content>

@@ -1,16 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { IonContent, IonInput, IonButton, IonSpinner } from '@ionic/angular';
 import { AuthService } from '../../../core/services/auth';
+import { AuthShellComponent } from '../../../shared/components/auth-shell/auth-shell.component';
+import { showInvalid } from '../../../shared/utils/form-errors';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, IonContent, IonInput, IonButton, IonSpinner],
+  imports: [ReactiveFormsModule, RouterLink, AuthShellComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class Login {
+export class LoginComponent {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
@@ -22,6 +23,8 @@ export class Login {
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
+
+  show = (name: string) => showInvalid(this.form.get(name));
 
   async submit() {
     if (this.form.invalid) {
@@ -35,7 +38,7 @@ export class Login {
       const user = await this.auth.login(email, password);
       await this.router.navigateByUrl(this.auth.homeRoute(user.role));
     } catch (e: any) {
-      this.error.set(e?.error?.message ?? 'Não foi possível entrar. Tente novamente.');
+      this.error.set(e?.error?.message ?? 'Não foi possível entrar. Verifique sua conexão e tente de novo.');
     } finally {
       this.loading.set(false);
     }

@@ -1,1 +1,77 @@
-<p>pet-form works!</p>
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate aria-labelledby="pet-form-title">
+  <div class="sheet-head">
+    <h2 id="pet-form-title" class="heading-sm">Cadastrar pet</h2>
+    <button type="button" class="icon-btn" (click)="cancelled.emit()" aria-label="Fechar cadastro de pet">
+      <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+    </button>
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="pet-name">Nome do pet</label>
+    <input id="pet-name" class="input" type="text" formControlName="name" placeholder="Thor" autocomplete="off"
+      [attr.aria-invalid]="show('name') ? 'true' : null"
+      [attr.aria-describedby]="show('name') ? 'pet-name-error' : null" />
+    @if (show('name')) {
+    <p id="pet-name-error" class="field__error">Informe o nome do pet.</p>
+    }
+  </div>
+
+  <div class="field">
+    <span class="field__label" id="species-label">Espécie</span>
+    <div class="chips" role="radiogroup" aria-labelledby="species-label">
+      @for (s of species; track s.value; let i = $index) {
+      <button type="button" class="chip" role="radio"
+        [attr.aria-checked]="form.controls.species.value === s.value"
+        [attr.tabindex]="form.controls.species.value === s.value ? 0 : -1"
+        (click)="form.controls.species.setValue(s.value)" (keydown)="onSpeciesKey($event, i)">
+        {{ s.label }}
+      </button>
+      }
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="pet-breed">Raça</label>
+    <input id="pet-breed" class="input" type="text" formControlName="breed" placeholder="Beagle"
+      [attr.aria-invalid]="show('breed') ? 'true' : null"
+      aria-describedby="pet-breed-hint" />
+    @if (show('breed')) {
+    <p class="field__error">Informe a raça.</p>
+    }
+    <p id="pet-breed-hint" class="field__hint">Se não souber, escreva "sem raça definida".</p>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label class="field__label" for="pet-weight">Peso em kg</label>
+      <input id="pet-weight" class="input" type="text" inputmode="decimal" formControlName="weight" placeholder="12,5"
+        [attr.aria-invalid]="show('weight') ? 'true' : null" aria-describedby="pet-weight-hint" />
+      @if (show('weight')) {
+      <p class="field__error">Use só números, por exemplo 12,5.</p>
+      }
+      <p id="pet-weight-hint" class="field__hint">Opcional</p>
+    </div>
+    <div class="field">
+      <label class="field__label" for="pet-birth">Nascimento</label>
+      <input id="pet-birth" class="input" type="date" formControlName="birth_date" [max]="today"
+        aria-describedby="pet-birth-hint" />
+      <p id="pet-birth-hint" class="field__hint">Opcional</p>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="pet-notes">Cuidados especiais</label>
+    <textarea id="pet-notes" class="input" formControlName="notes" maxlength="300"
+      placeholder="Alergias, medo de secador, comportamento com outros pets"
+      aria-describedby="pet-notes-hint"></textarea>
+    <p id="pet-notes-hint" class="field__hint">Opcional. Ajuda a equipe a cuidar melhor do seu pet.</p>
+  </div>
+
+  @if (error()) {
+  <p class="form-error" role="alert">{{ error() }}</p>
+  }
+
+  <button class="btn btn--dark" type="submit" [disabled]="loading()">
+    {{ loading() ? 'Salvando…' : 'Salvar pet' }}
+  </button>
+</form>

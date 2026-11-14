@@ -1,0 +1,22 @@
+<ion-content [fullscreen]="true">
+    <div class="shell">
+        <header class="hero">
+            <div class="hero__inner">
+                <div class="hero__top">
+                    <span class="brand"><ion-icon name="paw-outline" aria-hidden="true"></ion-icon>PetShop</span>
+                    @if (back()) {
+                    <a class="back" [routerLink]="back()">Voltar</a>
+                    }
+                </div>
+                <h1>{{ title() }}</h1>
+                @if (subtitle()) {
+                <p>{{ subtitle() }}</p>
+                }
+            </div>
+        </header>
+
+        <main class="sheet">
+            <ng-content />
+        </main>
+    </div>
+</ion-content>

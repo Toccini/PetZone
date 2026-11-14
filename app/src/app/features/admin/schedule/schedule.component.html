@@ -1,1 +1,108 @@
-<p>schedule works!</p>
+<ion-content>
+  <main id="main" class="page page--wide">
+    <div class="head">
+      <div>
+        <h1 class="heading">Agenda · {{ title() }}</h1>
+        @if (subtitle()) {
+        <p class="muted head__sub">{{ subtitle() }}</p>
+        }
+      </div>
+
+      <!-- Seletor de data em pílulas -->
+      <div class="date-nav" role="group" aria-label="Escolher dia da agenda">
+        <button type="button" class="icon-btn" (click)="shiftDay(-1)" aria-label="Dia anterior">
+          <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+        </button>
+        <button type="button" class="chip" [attr.aria-pressed]="isToday()" (click)="goToday()">Hoje</button>
+        <label class="sr-only" for="agenda-date">Data</label>
+        <input #today id="agenda-date" class="input date-input" type="date" [value]="date()"
+          (change)="setDate(today.value)" />
+        <button type="button" class="icon-btn" (click)="shiftDay(1)" aria-label="Próximo dia">
+          <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Resumo do dia -->
+    @if (!loading() && items().length) {
+    <ul class="stats" role="list">
+      <li class="card stat"><span class="stat__n">{{ items().length }}</span><span class="stat__l">agendamentos</span></li>
+      <li class="card stat"><span class="stat__n">{{ filters()[1].count }}</span><span class="stat__l">a atender</span></li>
+      <li class="card stat"><span class="stat__n">{{ money(revenue()) }}</span><span class="stat__l">previsto no dia</span></li>
+    </ul>
+    }
+
+    @if (!loading() && items().length) {
+    <div class="chips filters" role="group" aria-label="Filtrar por status">
+      @for (f of filters(); track f.value) {
+        <button type="button" class="chip" [attr.aria-pressed]="filter() === f.value" (click)="filter.set(f.value)">
+          {{ f.label }} <span class="chip__count">{{ f.count }}</span>
+        </button>
+        }
+      </div>
+    }
+
+    <div aria-live="polite">
+      @if (message()) {
+      <p class="notice">{{ message() }}</p>
+      }
+    </div>
+    @if (error()) {
+    <p class="form-error" role="alert">{{ error() }}</p>
+    }
+
+    @if (loading()) {
+    <p class="loading-text">Carregando agenda…</p>
+    } @else if (items().length === 0) {
+    <div class="card empty empty--wide">
+      <img src="/img/dog-and-cat.jpg" alt="" width="900" height="600" />
+      <div class="empty__body">
+        <p>Nenhum agendamento neste dia.</p>
+        <button type="button" class="btn btn--light btn--auto" (click)="shiftDay(1)">Ver próximo dia</button>
+      </div>
+    </div>
+    } @else if (visible().length === 0) {
+    <p class="notice">Nenhum agendamento com o status "{{ filterLabel() }}" neste dia.</p>
+    } @else {
+    <ul class="list-group agenda" role="list" aria-label="Agendamentos do dia">
+      @for (a of visible(); track a.id) {
+      <li class="row" [class.is-cancelled]="a.status === 'CANCELLED'">
+        <p class="row__time">{{ timeOf(a.date_time) }}</p>
+
+        <div class="row__main">
+          <p class="row__pet">
+            <span class="icon-circle" aria-hidden="true"><ion-icon [name]="serviceIcon(a.service.title)"></ion-icon></span>
+            <span>
+              <strong>{{ a.pet.name }}</strong>
+              <span class="row__meta">{{ SPECIES_LABEL[a.pet.species] }} · {{ a.pet.breed }}</span>
+            </span>
+          </p>
+          <p class="row__info">
+            {{ a.service.title }} · {{ money(a.service.price) }} · Tutor: {{ a.client?.name }}
+            @if (a.client?.phone) {
+            · <a class="row__phone" [href]="phoneHref(a.client!.phone)">
+              <ion-icon name="call-outline" aria-hidden="true"></ion-icon>{{ a.client!.phone }}
+            </a>
+            }
+          </p>
+          @if (a.notes) {
+          <p class="row__notes">Obs.: {{ a.notes }}</p>
+          }
+        </div>
+
+        <div class="row__status">
+          <span [class]="'badge badge--' + a.status">{{ STATUS_LABEL[a.status] }}</span>
+          <label class="sr-only" [attr.for]="'st-' + a.id">Alterar status de {{ a.pet.name }} às {{ timeOf(a.date_time) }}</label>
+          <select [id]="'st-' + a.id" class="input status-select" [value]="a.status"
+            [disabled]="savingId() === a.id" (change)="changeStatus(a, $any($event.target).value)">
+            @for (s of statuses; track s) {
+            <option [value]="s" [selected]="s === a.status">{{ STATUS_LABEL[s] }}</option>
+            }
+          </select>
+        </div>
+      </li>
+      }
+    </ul>
+    }
+  </main>
+</ion-content>
