@@ -86,9 +86,9 @@
 ion-datetime {
   --background: #ffffff;
   --background-rgb: 255, 255, 255;
-  --ion-color-primary: #1f1f1f;
-  --ion-color-primary-rgb: 31, 31, 31;
-  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary: var(--color-brand);
+  --ion-color-primary-rgb: 173, 139, 201;
+  --ion-color-primary-contrast: var(--color-brand-ink);
   --ion-text-color: #1f1f1f;
   width: 100%;
   max-width: 360px;
@@ -138,9 +138,9 @@ ion-datetime {
   }
 
   &[aria-checked='true'] {
-    background: var(--color-ink);
-    border-color: var(--color-ink);
-    color: var(--color-bone);
+    background: var(--color-brand);
+    border-color: var(--color-brand);
+    color: var(--color-brand-ink);
   }
 
   &.is-off {

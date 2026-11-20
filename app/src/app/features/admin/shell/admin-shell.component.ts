@@ -12,7 +12,7 @@ import { AuthService } from '../../../core/services/auth';
       <div class="band-dark bar">
         <div class="bar__inner">
           <a class="brand" routerLink="/admin/schedule">
-            <ion-icon name="paw-outline" aria-hidden="true"></ion-icon>PetShop
+            <img class="brand__logo" src="/img/petzone-logo.png" alt="PetZone" width="180" height="38" />
             <span class="bar__tag">Balcão</span>
           </a>
           <nav aria-label="Painel do administrador">
@@ -39,9 +39,9 @@ import { AuthService } from '../../../core/services/auth';
       display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
       max-width: 1200px; margin: 0 auto; padding: 8px 24px; box-sizing: border-box; min-height: 64px;
     }
-    .brand { color: #fff; }
+    .brand { color: #fff; background: transparent; padding: 8px 0; }
     .bar__tag {
-      margin-left: 4px; padding: 4px 10px; border: 1px solid rgba(255,255,255,.5); border-radius: 9999px;
+      margin-left: 4px; padding: 4px 10px; color: var(--color-brand); border: 1px solid var(--color-brand); border-radius: 9999px;
       font: 600 12px/1 var(--font-ui); letter-spacing: .015em;
     }
     nav { display: flex; gap: 4px; margin: 0 auto; }

@@ -10,6 +10,10 @@
 
   /* Cores */
   --color-ink: #1f1f1f;
+  --color-brand: #ad8bc9;
+  --color-brand-shade: #987ab1;
+  --color-brand-tint: #b597ce;
+  --color-brand-ink: #432654;
   --color-pure-black: #000000;
   --color-bone: #ffffff;
   --color-ash-grey: #c9c9cd;
@@ -65,12 +69,12 @@ html:root {
   --ion-text-color-rgb: 31, 31, 31;
   --ion-font-family: var(--font-ui);
 
-  --ion-color-primary: #1f1f1f;
-  --ion-color-primary-rgb: 31, 31, 31;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #000000;
-  --ion-color-primary-tint: #4c4c4c;
+  --ion-color-primary: var(--color-brand);
+  --ion-color-primary-rgb: 173, 139, 201;
+  --ion-color-primary-contrast: var(--color-brand-ink);
+  --ion-color-primary-contrast-rgb: 67, 38, 84;
+  --ion-color-primary-shade: var(--color-brand-shade);
+  --ion-color-primary-tint: var(--color-brand-tint);
 
   --ion-toolbar-background: #ffffff;
   --ion-toolbar-color: #1f1f1f;
@@ -171,7 +175,7 @@ img {
   min-height: 52px;
   padding: 0 var(--spacing-24);
   box-sizing: border-box;
-  border: 2px solid var(--color-ink);
+  border: 2px solid var(--color-brand);
   border-radius: var(--radius-pill);
   font: 600 16px/1 var(--font-ui);
   letter-spacing: -0.005em;
@@ -196,19 +200,19 @@ img {
 }
 
 .btn--dark {
-  background: var(--color-ink);
-  color: var(--color-bone);
+  background: var(--color-brand);
+  color: var(--color-brand-ink);
 }
 
 .btn--light {
   background: var(--color-bone);
-  color: var(--color-ink);
+  color: var(--color-brand-ink);
 }
 
 /* Pílula branca sobre faixa escura */
 .btn--inverse {
   background: var(--color-bone);
-  color: var(--color-ink);
+  color: var(--color-brand-ink);
   border-color: var(--color-bone);
 }
 
@@ -219,7 +223,7 @@ img {
   padding: 0 var(--spacing-16);
   border-width: 1px;
   background: rgba(255, 255, 255, 0.6);
-  color: var(--color-ink);
+  color: var(--color-brand-ink);
   font-size: 14px;
 }
 
@@ -248,12 +252,12 @@ img {
   border: 1px solid var(--color-ash-grey);
   border-radius: var(--radius-pill);
   background: var(--color-bone);
-  color: var(--color-ink);
+  color: var(--color-brand-ink);
   cursor: pointer;
   transition: border-color 150ms ease;
 
   &:hover:not(:disabled) {
-    border-color: var(--color-ink);
+    border-color: var(--color-brand-ink);
   }
 
   &:disabled {
@@ -279,7 +283,7 @@ img {
   padding: 12px 0; /* área de toque */
 
   &:hover {
-    color: var(--color-ink);
+    color: var(--color-brand-ink);
   }
 }
 
@@ -475,20 +479,20 @@ select.input {
   border: 1px solid var(--color-ash-grey);
   border-radius: var(--radius-pill);
   background: var(--color-bone);
-  color: var(--color-ink);
+  color: var(--color-brand-ink);
   font: 600 14px/1 var(--font-ui);
   cursor: pointer;
   transition: border-color 150ms ease;
 
   &:hover {
-    border-color: var(--color-ink);
+    border-color: var(--color-brand-ink);
   }
 
   &[aria-pressed='true'],
   &[aria-checked='true'] {
-    background: var(--color-ink);
-    border-color: var(--color-ink);
-    color: var(--color-bone);
+    background: var(--color-brand);
+    border-color: var(--color-brand-ink);
+    color: var(--color-brand-ink);
   }
 
   ion-icon {
@@ -663,4 +667,11 @@ select.input {
 ion-modal.sheet-modal {
   --border-radius: 22.5px;
   --background: #ffffff;
+}
+
+.brand__logo {
+  width: clamp(140px, 38vw, 180px);
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
 }

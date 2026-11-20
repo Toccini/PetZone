@@ -1,10 +1,10 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IonContent, IonIcon } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 
 @Component({
   selector: 'app-auth-shell',
-  imports: [IonContent, IonIcon, RouterLink],
+  imports: [IonContent, RouterLink],
   templateUrl: './auth-shell.component.html',
   styleUrl: './auth-shell.component.scss',
 })
